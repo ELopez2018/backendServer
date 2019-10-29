@@ -1,6 +1,17 @@
 // requires
 var express = require('express');
 var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+
+//Inicializar Variables
+var app = express();
+
+// Body Parser
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// parse application/json
+app.use(bodyParser.json());
 
 // Cofiguraciones para Actualizar
 mongoose.set('useNewUrlParser', true);
@@ -9,7 +20,6 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 
 // Conexion Base de Datos
-
 mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (error, res) => {
     if (error) {
         throw error;
@@ -18,17 +28,18 @@ mongoose.connection.openUri('mongodb://localhost:27017/hospitalDB', (error, res)
     }
 });
 
-//Inicializar Variables
-var app = express();
+
+
+// Importar Rutas
+var approutes = require('./routes/app');
+var usuarioRoutes = require('./routes/usuario');
+var loginRoutes = require('./routes/login');
 
 // Rutas
-app.get('/', (req, res, next) => {
+app.use('/usuario', usuarioRoutes);
+app.use('/login', loginRoutes);
 
-    res.status(200).json({
-        ok: true,
-        mensaje: 'Peticion realizada correctamente'
-    });
-});
+app.use('/', approutes);
 
 
 // Escuchar peticiones
